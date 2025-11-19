@@ -2,17 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- Esto asegura que el ancho sea correcto y evita zoom accidental -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <!-- Estas etiquetas hacen que parezca una APP real en el celular -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#f4f1ea">
 
     <title>Anotador Truco Bauhaus</title>
     <style>
-        /* ESTILO VISUAL - TIPO REVISTA / BAUHAUS */
+        /* === ESTILO VISUAL (COLORES INTACTOS) === */
         :root {
             --bg-color: #f4f1ea; 
             --ink-color: #1a1a1a; 
@@ -20,9 +17,9 @@
         }
 
         * {
-            box-sizing: border-box; /* Para que los bordes no rompan el tamaño */
-            -webkit-tap-highlight-color: transparent; /* Quita el parpadeo azul al tocar en Android/iOS */
-            user-select: none; /* Evita seleccionar texto al tocar rápido */
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
@@ -30,40 +27,33 @@
             color: var(--ink-color);
             font-family: 'Arial Black', 'Helvetica', sans-serif;
             margin: 0;
-            
-            /* AJUSTE DE PANTALLA COMPLETA INTELIGENTE */
-            height: 100vh; /* Fallback */
-            height: 100dvh; /* Altura dinámica real del móvil */
-            
+            height: 100vh; 
+            height: 100dvh; 
             display: flex;
             flex-direction: column;
-            
-            /* ZONAS SEGURAS (Para el notch y la barra de inicio del iPhone) */
             padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
             padding-left: max(20px, env(safe-area-inset-left));
             padding-right: max(20px, env(safe-area-inset-right));
-            
             text-transform: uppercase;
-            overflow: hidden; /* Evita scroll general de la página */
+            overflow: hidden;
         }
 
         h1 {
             text-align: center;
-            font-size: clamp(1rem, 4vh, 1.5rem); /* Tamaño adaptable */
+            font-size: clamp(1rem, 4vh, 1.5rem);
             margin: 0;
             padding: 15px 0;
             border-bottom: 4px solid var(--ink-color);
             letter-spacing: 2px;
-            flex-shrink: 0; /* El título no se achica */
+            flex-shrink: 0;
         }
 
         /* TABLERO PRINCIPAL */
         .tablero {
             display: flex;
-            flex: 1; /* Ocupa todo el espacio sobrante */
+            flex: 1;
             gap: 15px;
-            overflow: hidden; /* Para que no se salga nada */
+            overflow: hidden;
             padding-top: 15px;
             padding-bottom: 10px;
         }
@@ -76,7 +66,7 @@
             border: 3px solid var(--ink-color);
             background: white;
             overflow: hidden;
-            border-radius: 4px; /* Un toquecito suave en las esquinas */
+            border-radius: 4px;
         }
 
         .header-equipo {
@@ -98,22 +88,23 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
-            overflow-y: auto; /* Solo esto hace scroll si hay muchos puntos */
+            gap: 10px; /* Espacio entre grupos */
+            overflow-y: auto; 
         }
 
-        /* DIBUJO DE LOS PUNTOS */
+        /* MODIFICACIÓN 1: PUNTOS UNO ARRIBA DEL OTRO */
         .fila-puntos {
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column; /* Antes era row, ahora column */
+            gap: 15px; /* Espacio vertical entre cuadrados */
+            flex-wrap: nowrap;
+            align-items: center;
             width: 100%;
         }
 
         .cuadrado {
-            width: clamp(30px, 8vw, 45px); /* Tamaño adaptable según ancho de pantalla */
-            height: clamp(30px, 8vw, 45px);
+            width: clamp(35px, 9vw, 50px); /* Un poco más grandes */
+            height: clamp(35px, 9vw, 50px);
             position: relative;
             opacity: 0.15; 
             transition: opacity 0.2s;
@@ -121,7 +112,7 @@
         
         .cuadrado.activo { opacity: 1; }
 
-        /* Palitos */
+        /* Palitos del cuadrado */
         .p-top, .p-right, .p-bottom, .p-left, .p-diag {
             position: absolute;
             background: var(--ink-color);
@@ -137,10 +128,9 @@
             width: 140%; height: 4px; top: 0; left: 0;
             transform-origin: top left; transform: rotate(45deg);
             display: block; visibility: hidden;
-            background: var(--accent-color); /* Diagonal en ROJO para destacar */
+            background: var(--accent-color);
         }
 
-        /* Lógica de visibilidad */
         .val-1 .p-top { visibility: visible; }
         .val-2 .p-top, .val-2 .p-right { visibility: visible; }
         .val-3 .p-top, .val-3 .p-right, .val-3 .p-bottom { visibility: visible; }
@@ -151,7 +141,7 @@
         .separador-buenas {
             width: 90%;
             border-top: 2px dashed var(--accent-color);
-            margin: 5px 0;
+            margin: 10px 0;
             text-align: center;
             color: var(--accent-color);
             font-size: 0.7rem;
@@ -160,13 +150,15 @@
         }
         .separador-buenas span { background: white; padding: 0 5px; }
 
-        /* BOTONES */
+        /* MODIFICACIÓN 2: BOTONES CENTRADOS PERFECTOS */
         .controles {
             width: 100%;
             display: flex;
             border-top: 3px solid var(--ink-color);
-            height: clamp(60px, 15vh, 100px); /* Botones bien altos para dedos grandes */
             flex-shrink: 0;
+            /* Movemos el padding del "safe area" al contenedor */
+            padding-bottom: env(safe-area-inset-bottom); 
+            background: var(--ink-color); /* Fondo para cubrir el área segura */
         }
 
         button {
@@ -176,16 +168,20 @@
             font-weight: 900;
             cursor: pointer;
             font-family: inherit;
+            height: clamp(70px, 12vh, 100px); /* Altura fija para el botón */
+            
+            /* Centrado absoluto del texto */
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-bottom: env(safe-area-inset-bottom); /* Respetar zona segura abajo */
+            line-height: 1;
+            padding: 0; /* Sin padding interno para no desviar el centro */
         }
 
         .btn-menos { background: #e0ded6; color: var(--ink-color); border-right: 1px solid var(--ink-color); }
         .btn-mas { background: var(--accent-color); color: white; }
         
-        button:active { filter: brightness(0.85); transform: translateY(2px); }
+        button:active { filter: brightness(0.85); }
 
         /* MODAL GANADOR */
         #modal-ganador {
@@ -220,7 +216,6 @@
             font-size: 1.2rem;
             margin-top: 40px;
             font-weight: bold;
-            border-radius: 0;
             letter-spacing: 2px;
         }
 
@@ -268,7 +263,6 @@
             else if (equipo === 'ellos' && ptsEllos < MAX_PUNTOS) ptsEllos++;
             actualizarTablero();
             verificarGanador();
-            // Pequeña vibración si el celular lo soporta
             if(navigator.vibrate) navigator.vibrate(30); 
         }
 
