@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- CAMBIO DE NOMBRE -->
     <title>Anotador de Truco</title>
 
-    <!-- CONFIGURACIÓN DE ICONO (SVG INCRUSTADO) -->
-    <!-- Esto dibuja el cuadradito tachado automáticamente como icono -->
+    <!-- ICONO (SVG INCRUSTADO) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f4f1ea'/%3E%3Crect x='15' y='15' width='70' height='70' fill='none' stroke='%231a1a1a' stroke-width='8'/%3E%3Cline x1='15' y1='15' x2='85' y2='85' stroke='%23e63946' stroke-width='8'/%3E%3C/svg%3E">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f4f1ea'/%3E%3Crect x='15' y='15' width='70' height='70' fill='none' stroke='%231a1a1a' stroke-width='8'/%3E%3Cline x1='15' y1='15' x2='85' y2='85' stroke='%23e63946' stroke-width='8'/%3E%3C/svg%3E">
 
-    <!-- MODO PANTALLA COMPLETA IOS -->
+    <!-- MODO PANTALLA COMPLETA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Truco">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -90,26 +88,28 @@
             flex-shrink: 0;
         }
 
-        /* ZONA DE PUNTOS */
+        /* MODIFICACIÓN: ZONA DE PUNTOS CON DISTRIBUCIÓN VERTICAL */
         .zona-puntos {
             flex: 1;
             width: 100%;
-            padding: 15px 5px;
+            padding: 10px 5px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            /* Esto empuja los bloques (malas/buenas) para usar todo el alto */
+            justify-content: space-between; 
             overflow-y: auto; 
         }
 
-        /* PUNTOS UNO ARRIBA DEL OTRO */
+        /* MODIFICACIÓN: FILAS DE PUNTOS ELÁSTICAS */
         .fila-puntos {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            flex-wrap: nowrap;
-            align-items: center;
+            flex: 1; /* Ocupar todo el espacio disponible */
             width: 100%;
+            align-items: center;
+            /* Distribuir los cuadrados equitativamente dentro del espacio */
+            justify-content: space-evenly;
         }
 
         .cuadrado {
@@ -118,6 +118,8 @@
             position: relative;
             opacity: 0.15; 
             transition: opacity 0.2s;
+            /* Evita que se peguen si la pantalla es muy chica */
+            margin: 5px 0; 
         }
         
         .cuadrado.activo { opacity: 1; }
@@ -151,7 +153,7 @@
         .separador-buenas {
             width: 90%;
             border-top: 2px dashed var(--accent-color);
-            margin: 10px 0;
+            margin: 5px 0;
             text-align: center;
             color: var(--accent-color);
             font-size: 0.7rem;
@@ -160,7 +162,7 @@
         }
         .separador-buenas span { background: white; padding: 0 5px; }
 
-        /* BOTONES CENTRADOS */
+        /* BOTONES */
         .controles {
             width: 100%;
             display: flex;
