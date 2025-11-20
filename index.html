@@ -3,13 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- CAMBIO DE NOMBRE -->
+    <title>Anotador de Truco</title>
+
+    <!-- CONFIGURACIÓN DE ICONO (SVG INCRUSTADO) -->
+    <!-- Esto dibuja el cuadradito tachado automáticamente como icono -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f4f1ea'/%3E%3Crect x='15' y='15' width='70' height='70' fill='none' stroke='%231a1a1a' stroke-width='8'/%3E%3Cline x1='15' y1='15' x2='85' y2='85' stroke='%23e63946' stroke-width='8'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f4f1ea'/%3E%3Crect x='15' y='15' width='70' height='70' fill='none' stroke='%231a1a1a' stroke-width='8'/%3E%3Cline x1='15' y1='15' x2='85' y2='85' stroke='%23e63946' stroke-width='8'/%3E%3C/svg%3E">
+
+    <!-- MODO PANTALLA COMPLETA IOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Truco">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#f4f1ea">
 
-    <title>Anotador Truco Bauhaus</title>
     <style>
-        /* === ESTILO VISUAL (COLORES INTACTOS) === */
+        /* === ESTILO VISUAL (INTACTO) === */
         :root {
             --bg-color: #f4f1ea; 
             --ink-color: #1a1a1a; 
@@ -88,22 +98,22 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px; /* Espacio entre grupos */
+            gap: 10px;
             overflow-y: auto; 
         }
 
-        /* MODIFICACIÓN 1: PUNTOS UNO ARRIBA DEL OTRO */
+        /* PUNTOS UNO ARRIBA DEL OTRO */
         .fila-puntos {
             display: flex;
-            flex-direction: column; /* Antes era row, ahora column */
-            gap: 15px; /* Espacio vertical entre cuadrados */
+            flex-direction: column;
+            gap: 15px;
             flex-wrap: nowrap;
             align-items: center;
             width: 100%;
         }
 
         .cuadrado {
-            width: clamp(35px, 9vw, 50px); /* Un poco más grandes */
+            width: clamp(35px, 9vw, 50px);
             height: clamp(35px, 9vw, 50px);
             position: relative;
             opacity: 0.15; 
@@ -112,7 +122,7 @@
         
         .cuadrado.activo { opacity: 1; }
 
-        /* Palitos del cuadrado */
+        /* Palitos */
         .p-top, .p-right, .p-bottom, .p-left, .p-diag {
             position: absolute;
             background: var(--ink-color);
@@ -150,15 +160,14 @@
         }
         .separador-buenas span { background: white; padding: 0 5px; }
 
-        /* MODIFICACIÓN 2: BOTONES CENTRADOS PERFECTOS */
+        /* BOTONES CENTRADOS */
         .controles {
             width: 100%;
             display: flex;
             border-top: 3px solid var(--ink-color);
             flex-shrink: 0;
-            /* Movemos el padding del "safe area" al contenedor */
             padding-bottom: env(safe-area-inset-bottom); 
-            background: var(--ink-color); /* Fondo para cubrir el área segura */
+            background: var(--ink-color); 
         }
 
         button {
@@ -168,14 +177,12 @@
             font-weight: 900;
             cursor: pointer;
             font-family: inherit;
-            height: clamp(70px, 12vh, 100px); /* Altura fija para el botón */
-            
-            /* Centrado absoluto del texto */
+            height: clamp(70px, 12vh, 100px);
             display: flex;
             align-items: center;
             justify-content: center;
             line-height: 1;
-            padding: 0; /* Sin padding interno para no desviar el centro */
+            padding: 0;
         }
 
         .btn-menos { background: #e0ded6; color: var(--ink-color); border-right: 1px solid var(--ink-color); }
@@ -223,7 +230,7 @@
 </head>
 <body>
 
-    <h1>ANOTADOR TRUCO</h1>
+    <h1>ANOTADOR DE TRUCO</h1>
 
     <div class="tablero">
         <!-- EQUIPO NOSOTROS -->
