@@ -27,7 +27,7 @@ export default function App() {
 
   /* MENU PRINCIPAL */
   return (
-    <div className="flex-1 h-full bg-bg text-ink font-sans flex flex-col p-6 items-center justify-center gap-8 overflow-y-auto">
+    <div className="flex-1 h-full bg-bg text-ink font-sans flex flex-col p-6 pt-10 items-center justify-start gap-8 overflow-y-auto">
 
       {/* Header / Logo */}
       <div className="text-center space-y-4">
