@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <title>Anotador de Truco</title>
+
+    <!-- ICONO (SVG INCRUSTADO) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f4f1ea'/%3E%3Crect x='15' y='15' width='70' height='70' fill='none' stroke='%231a1a1a' stroke-width='8'/%3E%3Cline x1='15' y1='15' x2='85' y2='85' stroke='%23e63946' stroke-width='8'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f4f1ea'/%3E%3Crect x='15' y='15' width='70' height='70' fill='none' stroke='%231a1a1a' stroke-width='8'/%3E%3Cline x1='15' y1='15' x2='85' y2='85' stroke='%23e63946' stroke-width='8'/%3E%3C/svg%3E">
+
+    <!-- MODO PANTALLA COMPLETA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Truco">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#f4f1ea">
+
+    <style>
+        /* === ESTILO VISUAL (INTACTO) === */
+        :root {
+            --bg-color: #f4f1ea; 
+            --ink-color: #1a1a1a; 
+            --accent-color: #e63946; 
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--ink-color);
+            font-family: 'Arial Black', 'Helvetica', sans-serif;
+            margin: 0;
+            height: 100vh; 
+            height: 100dvh; 
+            display: flex;
+            flex-direction: column;
+            padding-top: env(safe-area-inset-top);
+            padding-left: max(20px, env(safe-area-inset-left));
+            padding-right: max(20px, env(safe-area-inset-right));
+            text-transform: uppercase;
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: clamp(1rem, 4vh, 1.5rem);
+            margin: 0;
+            padding: 15px 0;
+            border-bottom: 4px solid var(--ink-color);
+            letter-spacing: 2px;
+            flex-shrink: 0;
+        }
+
+        /* TABLERO PRINCIPAL */
+        .tablero {
+            display: flex;
+            flex: 1;
+            gap: 15px;
+            overflow: hidden;
+            padding-top: 15px;
+            padding-bottom: 10px;
+        }
+
+        .equipo {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 3px solid var(--ink-color);
+            background: white;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .header-equipo {
+            background: var(--ink-color);
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 12px 0;
+            font-size: clamp(0.8rem, 3vw, 1.2rem);
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        /* MODIFICACIÓN: ZONA DE PUNTOS CON DISTRIBUCIÓN VERTICAL */
+        .zona-puntos {
+            flex: 1;
+            width: 100%;
+            padding: 10px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Esto empuja los bloques (malas/buenas) para usar todo el alto */
+            justify-content: space-between; 
+            overflow-y: auto; 
+        }
+
+        /* MODIFICACIÓN: FILAS DE PUNTOS ELÁSTICAS */
+        .fila-puntos {
+            display: flex;
+            flex-direction: column;
+            flex: 1; /* Ocupar todo el espacio disponible */
+            width: 100%;
+            align-items: center;
+            /* Distribuir los cuadrados equitativamente dentro del espacio */
+            justify-content: space-evenly;
+        }
+
+        .cuadrado {
+            width: clamp(35px, 9vw, 50px);
+            height: clamp(35px, 9vw, 50px);
+            position: relative;
+            opacity: 0.15; 
+            transition: opacity 0.2s;
+            /* Evita que se peguen si la pantalla es muy chica */
+            margin: 5px 0; 
+        }
+        
+        .cuadrado.activo { opacity: 1; }
+
+        /* Palitos */
+        .p-top, .p-right, .p-bottom, .p-left, .p-diag {
+            position: absolute;
+            background: var(--ink-color);
+            display: none; 
+        }
+
+        .p-top    { top: 0; left: 0; width: 100%; height: 4px; display: block; visibility: hidden;}
+        .p-right  { top: 0; right: 0; width: 4px; height: 100%; display: block; visibility: hidden;}
+        .p-bottom { bottom: 0; left: 0; width: 100%; height: 4px; display: block; visibility: hidden;}
+        .p-left   { top: 0; left: 0; width: 4px; height: 100%; display: block; visibility: hidden;}
+        
+        .p-diag {
+            width: 140%; height: 4px; top: 0; left: 0;
+            transform-origin: top left; transform: rotate(45deg);
+            display: block; visibility: hidden;
+            background: var(--accent-color);
+        }
+
+        .val-1 .p-top { visibility: visible; }
+        .val-2 .p-top, .val-2 .p-right { visibility: visible; }
+        .val-3 .p-top, .val-3 .p-right, .val-3 .p-bottom { visibility: visible; }
+        .val-4 .p-top, .val-4 .p-right, .val-4 .p-bottom, .val-4 .p-left { visibility: visible; }
+        .val-5 .p-top, .val-5 .p-right, .val-5 .p-bottom, .val-5 .p-left, .val-5 .p-diag { visibility: visible; }
+
+        /* SEPARADOR */
+        .separador-buenas {
+            width: 90%;
+            border-top: 2px dashed var(--accent-color);
+            margin: 5px 0;
+            text-align: center;
+            color: var(--accent-color);
+            font-size: 0.7rem;
+            line-height: 0;
+            flex-shrink: 0;
+        }
+        .separador-buenas span { background: white; padding: 0 5px; }
+
+        /* BOTONES */
+        .controles {
+            width: 100%;
+            display: flex;
+            border-top: 3px solid var(--ink-color);
+            flex-shrink: 0;
+            padding-bottom: env(safe-area-inset-bottom); 
+            background: var(--ink-color); 
+        }
+
+        button {
+            flex: 1;
+            border: none;
+            font-size: 2.5rem;
+            font-weight: 900;
+            cursor: pointer;
+            font-family: inherit;
+            height: clamp(70px, 12vh, 100px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .btn-menos { background: #e0ded6; color: var(--ink-color); border-right: 1px solid var(--ink-color); }
+        .btn-mas { background: var(--accent-color); color: white; }
+        
+        button:active { filter: brightness(0.85); }
+
+        /* MODAL GANADOR */
+        #modal-ganador {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(244, 241, 234, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            display: none;
+            padding: 20px;
+        }
+        
+        #modal-ganador h2 {
+            font-size: clamp(2rem, 10vw, 4rem);
+            text-align: center;
+            color: var(--accent-color);
+            border: 5px solid var(--ink-color);
+            padding: 30px;
+            transform: rotate(-3deg);
+            background: white;
+            box-shadow: 10px 10px 0px var(--ink-color);
+        }
+
+        #btn-reiniciar {
+            background: var(--ink-color);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.2rem;
+            margin-top: 40px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>ANOTADOR DE TRUCO</h1>
+
+    <div class="tablero">
+        <!-- EQUIPO NOSOTROS -->
+        <div class="equipo">
+            <div class="header-equipo">NOSOTROS <span id="num-nos">(0)</span></div>
+            <div class="zona-puntos" id="puntos-nos"></div>
+            <div class="controles">
+                <button class="btn-menos" onclick="restar('nos')">-</button>
+                <button class="btn-mas" onclick="sumar('nos')">+</button>
+            </div>
+        </div>
+
+        <!-- EQUIPO ELLOS -->
+        <div class="equipo">
+            <div class="header-equipo">ELLOS <span id="num-ellos">(0)</span></div>
+            <div class="zona-puntos" id="puntos-ellos"></div>
+            <div class="controles">
+                <button class="btn-menos" onclick="restar('ellos')">-</button>
+                <button class="btn-mas" onclick="sumar('ellos')">+</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE GANADOR -->
+    <div id="modal-ganador">
+        <h2 id="texto-ganador">GANARON</h2>
+        <button id="btn-reiniciar" onclick="reiniciar()">NUEVA PARTIDA</button>
+    </div>
+
+    <script>
+        let ptsNos = 0;
+        let ptsEllos = 0;
+        const MAX_PUNTOS = 30;
+
+        function sumar(equipo) {
+            if (equipo === 'nos' && ptsNos < MAX_PUNTOS) ptsNos++;
+            else if (equipo === 'ellos' && ptsEllos < MAX_PUNTOS) ptsEllos++;
+            actualizarTablero();
+            verificarGanador();
+            if(navigator.vibrate) navigator.vibrate(30); 
+        }
+
+        function restar(equipo) {
+            if (equipo === 'nos' && ptsNos > 0) ptsNos--;
+            if (equipo === 'ellos' && ptsEllos > 0) ptsEllos--;
+            actualizarTablero();
+            if(navigator.vibrate) navigator.vibrate(10);
+        }
+
+        function actualizarTablero() {
+            dibujarPuntos('puntos-nos', ptsNos);
+            dibujarPuntos('puntos-ellos', ptsEllos);
+            document.getElementById('num-nos').innerText = `(${ptsNos})`;
+            document.getElementById('num-ellos').innerText = `(${ptsEllos})`;
+        }
+
+        function dibujarPuntos(idContenedor, puntosTotales) {
+            const contenedor = document.getElementById(idContenedor);
+            contenedor.innerHTML = ''; 
+            
+            let html = '<div class="fila-puntos">';
+
+            for (let i = 0; i < 6; i++) {
+                if (i === 3) {
+                    html += `</div>
+                             <div class="separador-buenas"><span>BUENAS</span></div>
+                             <div class="fila-puntos">`;
+                }
+                
+                let ptsEnCuadrado = Math.max(0, Math.min(5, puntosTotales - (i * 5)));
+                let claseActiva = ptsEnCuadrado > 0 ? 'activo' : '';
+                let claseValor = 'val-' + ptsEnCuadrado;
+
+                html += `
+                    <div class="cuadrado ${claseActiva} ${claseValor}">
+                        <div class="p-top"></div>
+                        <div class="p-right"></div>
+                        <div class="p-bottom"></div>
+                        <div class="p-left"></div>
+                        <div class="p-diag"></div>
+                    </div>
+                `;
+            }
+            html += '</div>'; 
+            contenedor.innerHTML = html;
+        }
+
+        function verificarGanador() {
+            if (ptsNos >= MAX_PUNTOS) mostrarGanador("¡GANAMOS!");
+            else if (ptsEllos >= MAX_PUNTOS) mostrarGanador("GANARON ELLOS");
+        }
+
+        function mostrarGanador(mensaje) {
+            document.getElementById('texto-ganador').innerText = mensaje;
+            document.getElementById('modal-ganador').style.display = 'flex';
+            if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+        }
+
+        function reiniciar() {
+            ptsNos = 0;
+            ptsEllos = 0;
+            document.getElementById('modal-ganador').style.display = 'none';
+            actualizarTablero();
+        }
+
+        actualizarTablero();
+    </script>
+</body>
+</html>

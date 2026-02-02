@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-color: #f4f1ea;
+  --ink-color: #1a1a1a;
+  --accent-color: #e63946;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--ink-color);
+  font-family: 'Arial Black', Helvetica, sans-serif;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  margin: 0;
+  overflow: hidden;
+  /* App-like feel */
+}
+
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+  /* Prevent rubber-banding */
+}
+
+#root {
+  height: 100dvh;
+  /* Dynamic viewport height */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar for the app aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-color);
+  border-radius: 3px;
+}
