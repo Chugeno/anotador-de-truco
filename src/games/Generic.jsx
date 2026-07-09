@@ -5,6 +5,7 @@ export default function GenericGame({ onBack }) {
     // State
     const [gameState, setGameState] = useState('setup');
     const [config, setConfig] = useState({ playerCount: 4, maxScore: 0 }); // 0 = Libre
+    const [maxScoreInput, setMaxScoreInput] = useState(''); // String para el input de meta
     const [players, setPlayers] = useState([]);
     const [winner, setWinner] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -17,7 +18,10 @@ export default function GenericGame({ onBack }) {
             try {
                 const parsed = JSON.parse(savedData);
                 if (parsed.gameState) setGameState(parsed.gameState);
-                if (parsed.config) setConfig(parsed.config);
+                if (parsed.config) {
+                    setConfig(parsed.config);
+                    setMaxScoreInput(parsed.config.maxScore > 0 ? String(parsed.config.maxScore) : '');
+                }
                 if (parsed.players) setPlayers(parsed.players);
                 if (parsed.winner) setWinner(parsed.winner);
             } catch (e) {
@@ -182,13 +186,16 @@ export default function GenericGame({ onBack }) {
                                 <div className="relative">
                                     <input
                                         type="number"
-                                        value={config.maxScore}
-                                        onChange={(e) => setConfig(prev => ({ ...prev, maxScore: parseInt(e.target.value) || 0 }))}
+                                        value={maxScoreInput}
+                                        onChange={(e) => {
+                                            setMaxScoreInput(e.target.value);
+                                            setConfig(prev => ({ ...prev, maxScore: parseInt(e.target.value) || 0 }));
+                                        }}
                                         className="w-full text-center text-2xl font-black bg-bg border-3 border-ink py-3 focus:outline-none focus:bg-white transition-colors"
                                         placeholder="0"
                                     />
                                     <div className="absolute right-3 top-4 text-xs font-bold text-gray-400 pointer-events-none">
-                                        {config.maxScore === 0 ? "LIBRE" : "PTS"}
+                                        {maxScoreInput === '' || maxScoreInput === '0' ? "LIBRE" : "PTS"}
                                     </div>
                                 </div>
                             </div>
@@ -282,10 +289,10 @@ function PlayerColumn({ player, maxScore, winnerId, hasCrown, onAddScore, onUpda
     const minWidth = totalPlayers <= 2 ? 'min-w-[50%]' : (totalPlayers === 3 ? 'min-w-[33%]' : 'min-w-[140px]');
 
     return (
-        <div className={`flex-1 ${minWidth} flex flex-col h-full snap-start border-r-3 border-ink last:border-r-0 transition-colors ${isWinner ? 'bg-amber-50' : 'bg-white'}`}>
+        <div className={`flex-1 ${minWidth} flex flex-col h-full snap-start border-r-3 border-ink last:border-r-0 transition-colors overflow-y-auto ${isWinner ? 'bg-amber-50' : 'bg-white'}`}>
 
-            {/* Header Column */}
-            <div className={`flex-none p-3 border-b-3 border-ink flex flex-col items-center gap-2 ${isWinner ? 'bg-amber-100' : ''}`}>
+            {/* Header Column - Sticky */}
+            <div className={`sticky top-0 z-10 p-3 border-b-3 border-ink flex flex-col items-center gap-2 ${isWinner ? 'bg-amber-100' : 'bg-white'}`}>
                 {isEditingName ? (
                     <input
                         autoFocus
@@ -316,7 +323,7 @@ function PlayerColumn({ player, maxScore, winnerId, hasCrown, onAddScore, onUpda
             </div>
 
             {/* Scores List */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-2 space-y-1">
+            <div ref={scrollRef} className="flex-1 p-2 space-y-1">
                 {player.scores.map((score, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm border-b border-gray-100 py-1 font-mono">
                         <span className={`font-bold ${score.points < 0 ? 'text-accent' : 'text-gray-500'}`}>
@@ -328,7 +335,7 @@ function PlayerColumn({ player, maxScore, winnerId, hasCrown, onAddScore, onUpda
             </div>
 
             {/* Input Footer */}
-            <div className="flex-none p-2 border-t-3 border-ink bg-gray-50">
+            <div className="sticky bottom-0 p-2 border-t-3 border-ink bg-gray-50">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-2">
                     <div className="flex">
                         <button
