@@ -334,6 +334,11 @@ function PlayerColumn({ player, maxScore, winnerId, hasCrown, onAddScore, onUpda
                 ))}
             </div>
 
+            {/* Player Name - Small centered below scores */}
+            <div className="flex-none text-center py-1 px-2 border-t border-gray-200">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{player.name}</span>
+            </div>
+
             {/* Input Footer */}
             <div className="flex-none p-2 border-t-3 border-ink bg-gray-50">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-2">
