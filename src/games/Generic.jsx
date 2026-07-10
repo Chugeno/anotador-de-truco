@@ -289,10 +289,10 @@ function PlayerColumn({ player, maxScore, winnerId, hasCrown, onAddScore, onUpda
     const minWidth = totalPlayers <= 2 ? 'min-w-[50%]' : (totalPlayers === 3 ? 'min-w-[33%]' : 'min-w-[140px]');
 
     return (
-        <div className={`flex-1 ${minWidth} flex flex-col h-full snap-start border-r-3 border-ink last:border-r-0 transition-colors overflow-y-auto ${isWinner ? 'bg-amber-50' : 'bg-white'}`}>
+        <div className={`flex-1 ${minWidth} flex flex-col h-full snap-start border-r-3 border-ink last:border-r-0 transition-colors ${isWinner ? 'bg-amber-50' : 'bg-white'}`}>
 
-            {/* Header Column - Sticky */}
-            <div className={`sticky top-0 z-10 p-3 border-b-3 border-ink flex flex-col items-center gap-2 ${isWinner ? 'bg-amber-100' : 'bg-white'}`}>
+            {/* Header Column */}
+            <div className={`flex-none p-3 border-b-3 border-ink flex flex-col items-center gap-2 ${isWinner ? 'bg-amber-100' : ''}`}>
                 {isEditingName ? (
                     <input
                         autoFocus
@@ -323,7 +323,7 @@ function PlayerColumn({ player, maxScore, winnerId, hasCrown, onAddScore, onUpda
             </div>
 
             {/* Scores List */}
-            <div ref={scrollRef} className="flex-1 p-2 space-y-1">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-2 space-y-1">
                 {player.scores.map((score, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm border-b border-gray-100 py-1 font-mono">
                         <span className={`font-bold ${score.points < 0 ? 'text-accent' : 'text-gray-500'}`}>
@@ -335,7 +335,7 @@ function PlayerColumn({ player, maxScore, winnerId, hasCrown, onAddScore, onUpda
             </div>
 
             {/* Input Footer */}
-            <div className="sticky bottom-0 p-2 border-t-3 border-ink bg-gray-50">
+            <div className="flex-none p-2 border-t-3 border-ink bg-gray-50">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-2">
                     <div className="flex">
                         <button
